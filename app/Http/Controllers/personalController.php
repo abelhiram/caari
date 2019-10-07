@@ -60,7 +60,6 @@ class personalController extends Controller
         $this->validate($request,[
             'expediente'=>'required|max:11|unique:tblPersonal',
             'nombre'=>'required|max:55',
-            'email'=>'required|string|email|max:255',
         ]);
 
         $mdlPersonal = new mdlPersonal();
@@ -123,7 +122,6 @@ class personalController extends Controller
         $this->validate($request,[
             'expediente'=>'required|max:11',
             'nombre'=>'required|max:55',
-            'email'=>'required|string|email|max:255',
         ]);
 
         $mdlPersonal = mdlPersonal::findOrFail($id);

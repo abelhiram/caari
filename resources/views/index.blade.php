@@ -32,16 +32,12 @@ Personal
 	<thead>
 		<th>No. Emp.</th>
 		<th>Nombre</th>
-		<th>Email</th>
-		<th>Nombramiento</th>
-		<th>Jornada</th>
+		<th>Turno</th>
 	</thead>
 	@foreach($personal as $personals)
 	<tbody>
 		<td>{{$personals->expediente}}</td>
 		<td>{{$personals->nombre}}</td>
-		<td>{{$personals->email}}</td>
-		<td>{{$personals->nombramiento}}</td>
 		<td>{{$personals->jornada}}</td>
 		<td>
 		<div class="btn-group">
@@ -50,16 +46,16 @@ Personal
             </button>
             <ul class="dropdown-menu">
 				<li>
-					{!!link_to_route('personal.edit', $title = 'Editar', $parameters = $personals->id, $attributes = ['class'=>'glyphicon glyphicon-pencil']);!!}
-				</li>
-				<li>
-					{!!link_to_route('horarios.show', $title = 'Horario', $parameters = $personals->id, $attributes = ['class'=>'glyphicon glyphicon-calendar']);!!}
-				</li>
-				<li>
 					{!!link_to_route('checadas.show', $title = 'Checadas', $parameters = $personals->id, $attributes = ['class'=>'glyphicon glyphicon-ok']);!!}	
 				</li>
-				<li role="separator" class="divider"></li>
+				<li role="separator" class="divider" ></li>
 				<li>
+					{!!link_to_route('personal.edit', $title = 'Editar', $parameters = $personals->id, $attributes = ['class'=>'glyphicon glyphicon-pencil']);!!}
+				</li>
+				<li style="display: none;">
+					{!!link_to_route('horarios.show', $title = 'Horario', $parameters = $personals->id, $attributes = ['class'=>'glyphicon glyphicon-calendar']);!!}
+				</li>
+				<li style="display: none;">
 					<a href="/reportes/reporteQuincenal/{{ $personals->id }}" class="glyphicon glyphicon-download-alt" title="Generar reporte quincenal">Generar reporte </a>
 				</li>
 			</ul>

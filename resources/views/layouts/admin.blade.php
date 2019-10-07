@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>UES Virtual - {{ucfirst(Route::currentRouteName())}}</title>
+  <title>Albergue temporal Caari Al Leyia - {{ucfirst(Route::currentRouteName())}}</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
@@ -24,11 +24,12 @@
 <div class="wrapper">
   <header class="main-header">
     <!-- Logo -->
-    <a href="{{ url('/') }}" class="logo">
+    <a href="{{ url('/personal') }}" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>U</b>ES</span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>UES Virtual</b></span>
+
+             <!-- <img src="{{ url('img/difsonora.png') }}" class="user-image" width="100%" alt="User Image">-->
+
+      <b>Sistema de Reportes</b>
     </a>
     <nav class="navbar navbar-static-top">
       <!-- Sidebar izquierda mostrar-ocultar-->
@@ -42,24 +43,24 @@
             <a class="active-tab" href="{{ url('personal') }}">Personal</a>
           </li>     
           <li class="dropdown messages-menu">
-            <a class="active-tab" href="{{ url('reportes') }}">Reportes</a>
+            <a class="active-tab" style="display: none;" href="{{ url('reportes') }}">Reportes</a>
           </li>  
           <li class="dropdown messages-menu">
-            <a class="active-tab" href="{{ url('reportesBono') }}">Reportes bono</a>
+            <a class="active-tab" style="display: none;" href="{{ url('reportesBono') }}">Reportes bono</a>
           </li>       
           <!-- Menú de usuario -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="{{ url('img/ues.jpg ') }}" class="user-image" alt="User Image">
+              <img src="{{ url('img/difsonora.png') }}" class="user-image" alt="User Image">
               <span class="hidden-xs">{{ Auth::user()->name }}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- Imagen -->
               <li class="user-header">
-                <img src="{{ url('img/ues.jpg ') }}" class="img-circle" alt="User Image">
+                <img src="{{ url('img/difsonora.png') }}" class="img-circle" alt="User Image">
 
                 <p>
-                  {{ Auth::user()->name }}
+                  Administración
                   
                 </p>
               </li>
@@ -101,16 +102,17 @@
       <ul class="sidebar-menu" data-widget="tree">
               <!-- Sidebar user panel -->
       <div class="user-panel">
+       <!-- <img src="{{ url('img/difsonora.png') }}" class="user-image" width="100%" alt="User Image">-->
         <div class="pull-left image">
-          <img src="http://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png" class="img-circle" alt="User Image">
+          
         </div>
         <div class="pull-left info">
-          <p>{{ Auth::user()->name }}</p>
-          <a href="#"><i class="glyphicon glyphicon-off"></i> Online</a>
+          
+          
         </div>
       </div>
       
-        <li class="header">Contenido de la página</li>
+        <li class="header">Panel de control</li>
         <li class="treeview active">
           <a href="#">
             <i class="glyphicon glyphicon-home"></i> <span>Inicio</span>
@@ -122,10 +124,10 @@
             <li class="dropdown messages-menu">
 	          <a class="active-tab" href="{{ url('personal') }}">Personal</a>
 	        </li>     
-	        <li class="dropdown messages-menu">
+	        <li class="dropdown messages-menu" style="display: none;">
 	          <a class="active-tab" href="{{ url('reportes') }}">Reportes</a>
 	        </li>  
-	        <li class="dropdown messages-menu">
+	        <li class="dropdown messages-menu" style="display: none;">
 	          <a class="active-tab" href="{{ url('reportesBono') }}">Reportes bono</a>
 	        </li>       
 	        <li class="dropdown messages-menu">
@@ -145,7 +147,7 @@
     @yield('pagina')
     </h1>
     <ol class="breadcrumb">
-      <li>Ues virtual</li>
+      <li>Panel de control</li>
       <li class="active">{{ucfirst(Route::currentRouteName())}}</li>
     </ol>
   </section>
@@ -171,9 +173,9 @@
 
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> Alpha
+      <b>Version</b> 1.0
     </div>
-    <strong>UES Virtual &copy; 2019 <a href="{{ url('/') }}">Unidad académica --</a>.</strong> 
+    <strong>Albergue temporal Caari Al Leyia &copy; 2019 <a href="{{ url('/personal') }}">Navojoa Sonora</a>.</strong> 
   </footer>
 
 </div>

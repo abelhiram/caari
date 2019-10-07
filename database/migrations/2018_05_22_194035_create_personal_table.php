@@ -17,9 +17,9 @@ class CreatePersonalTable extends Migration
             $table->increments('id');
             $table->string('expediente');
             $table->string('nombre',120);
-            $table->string('email');
-            $table->enum('nombramiento',['determinado','indeterminado']);
-            $table->enum('jornada',['horas','tiempo completo','medio tiempo','confianza']);
+            $table->string('email')->nullable();
+            $table->enum('nombramiento',['determinado','indeterminado'])->nullable();
+            $table->enum('jornada',['Matutino','Vespertino','Nocturno','Administrativo','Indefinido'])->nullable();
             $table->binary('huella')->nullable();
             $table->string('foto')->nullable();
             $table->timestamp('created_at')->nullable();

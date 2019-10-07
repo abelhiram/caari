@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>UES Virtual - Iniciar sesión</title>
+    <title>Iniciar sesión</title>
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Scripts -->
@@ -96,7 +96,7 @@
                 <div class="content">
                     <div class="title m-b-md">
                         <div class="mb-5">
-                            <img src="img/logo_virtual.png " alt="UES Virtual" class="img-fluid">
+                            <img src="{{ url('img/difsonora.png') }}" alt="" class="img-fluid">
                         </div>
                         <h1 style="font-size:35px;" class="font-weight-bold mb-4">Iniciar sesión</h1>
                         <hr>

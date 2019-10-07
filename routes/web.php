@@ -30,8 +30,9 @@ Route::get('/permiso', function () {
 Route::get('reportes/{id}', 'ExcelController@getReporteMaestro');
 Route::get('reportes/{id}/{fechaInicial}/{fechaFinal}/', 'ExcelController@getReporteMaestroFechas');
 Route::get('reportes/reporteQuincenal/{id}/', 'ExcelController@getReporteQuincenal');
-Route::get('permiso/id/{id}/', 'checadasController@permiso');
+Route::get('permiso/id/{id}/', 'checadasController@horasExtras');
 Route::get('checar/id/{id}/', 'checadasController@checar');
+Route::get('extras/id/{id}/', 'checadasController@permiso');
 //Route::resource('reportes','reportesController');
 Route::resource('personal','personalController');
 Route::resource('permiso','permisoController');

@@ -6,7 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>UES Virtual - Checador</title>
+        <title>Checador</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
@@ -94,27 +94,25 @@
                 <div class="top-right links">              
                     <a href="{{ url('personal') }}">Home</a>
                     <a href="{{ url('login') }}">Login</a>
-                    <a href="{{ url('/permiso') }}">Permiso</a>
-                
                 </div>
 
             
             
             <div class="content">
                 <div class="mb-5">
-                    <img src="img/logo_virtual.png " alt="UES Virtual" class="img-fluid">
+                    <img src="{{ url('img/difsonora.png') }}" alt="UES Virtual" width="" class="img-fluid">
                 </div>
                 <div class="title m-b-md">
                 	{!!Form::open(['route'=>'checadas.store', 'method'=>'POST', 'class'=>''])!!}
                 	<label id="hora"></label>
-
+                    <div style="display: none;">
 					{!!Form::text('id_tblPersonal',null,['class'=>'form-control','placeholder'=>'expediente o id'])!!}
 
 					<!--\Carbon\Carbon::now()->toTimeString()-->
 					
 					<hr>
 					{!!Form::submit('Check-in',['class'=>'btn btn-primary btn-block'])!!}
-                    
+                    </div>
 					
 					{!!Form::close()!!}
 					

@@ -27,26 +27,9 @@
                             </div>
                         </div>
 						<div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
-                            <div class="col-md-6">
-							    {!!Form::text('email',null,['class'=>'form-control','placeholder'=>'ingresa el e-mail','required','email'])!!}
-                                @if ($errors->has('email'))
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-						</div>
-						<div class="form-group row">
-                            <label for="nombramiento" class="col-md-4 col-form-label text-md-right">Nombramiento</label>
-                            <div class="col-md-6">
-							{!!Form::select('nombramiento',['determinado' => 'determinado','indeterminado'=>'indeterminado'],null, ['class' => 'form-control'])!!}
-                            </div>
-						</div>
-						<div class="form-group row">
                             <label for="jornada" class="col-md-4 col-form-label text-md-right">Jornada</label>
                             <div class="col-md-6">
-							{!!Form::select('jornada',['horas'=>'horas','tiempo completo'=>'tiempo completo','medio tiempo'=>'medio tiempo','confianza'=>'confianza'],null, ['class' => 'form-control'])!!}
+							{!!Form::select('jornada',['Indefinido'=>'Indefinido','Matutino'=>'Matutino','Vespertino'=>'Vespertino','Nocturno'=>'Nocturno','Administrativo'=>'Administrativo'],null, ['class' => 'form-control'])!!}
                             </div>
 						</div>
 						<div class="form-group row">

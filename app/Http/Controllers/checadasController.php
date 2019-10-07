@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\mdlChecadas;
 use App\mdlPersonal;
 use App\mdlHorarios;
+use App\mdlHoras;
 use Session;
 use Redirect;
 use DB;
@@ -18,11 +19,15 @@ class checadasController extends Controller
      {
         $entradas = mdlChecadas::where([
             ['id_tblPersonal', '=', $personal],
-            ['checada', '=', 0],
+            ['hora', '!=', null],
             ['fecha', '=', $hoy],
         ])->orWhere([
             ['id_tblPersonal', '=', $personal],
             ['checada', '=', 1],
+            ['fecha', '=', $hoy],
+        ])->orWhere([
+            ['id_tblPersonal', '=', $personal],
+            ['checada', '=', 0],
             ['fecha', '=', $hoy],
         ])->orWhere([
             ['id_tblPersonal', '=', $personal],
@@ -56,8 +61,49 @@ class checadasController extends Controller
     {
         
     }
-     public function checar(Request $request)
-     {
+
+    public function horasExtras(Request $request)
+    {
+    	$personal = mdlPersonal::where('expediente', '=', $request['id'])->get(); 
+        if($personal->count()==0){
+            return "NO EXISTE ESE USUARIO";     
+        }
+
+        $nombre = $personal[0]->nombre;
+        $fecha = date("Y-m-d");
+        $hora = date('H:i:s');
+
+        return $this->registroExtras($nombre,$personal[0]->id,$hora,$fecha); 
+    }
+
+    public function registroExtras($nombre,$personal,$hora,$fecha)
+    {
+    	$ext = mdlHoras::where([
+            ['id_tblPersonal', '=', $personal],
+            ['hora_entrada', '!=', null],
+            ['fecha', '=', $fecha],
+        ])->get();
+
+        if($ext->count()==0){
+        	$mdlExt = new mdlHoras();
+	        $mdlExt->id_tblPersonal = $personal;
+	        $mdlExt->hora_entrada = $hora;
+	        $mdlExt->fecha = $fecha;
+	        $mdlExt->save();
+
+            //return 'Inicio de horas extra: '.$fecha.' '.$hora; 
+            return 'Inicio de horas extra';
+        }else{
+        	$ext[0]->hora_salida = $hora;
+            $ext[0]->save();
+            //return 'Término de horas extra: '.$fecha.' '.$hora; 
+        	return 'Termino de horas extra'; 
+        }
+    }
+
+
+    public function checar(Request $request)
+    {
         $personal = mdlPersonal::where('expediente', '=', $request['id'])->get(); 
         if($personal->count()==0){
             return "NO EXISTE ESE USUARIO";     
@@ -68,12 +114,93 @@ class checadasController extends Controller
         $hora = date('H:i:s');
 
         return $this->registroUnHorario($nombre,$personal[0]->id,$hora,$fecha); 
-     }
+    }
+
+    public function registroUnHorario($nombre,$personal,$hora,$fecha){
+
+        $registros = mdlChecadas::where([
+            ['id_tblPersonal', '=', $personal],
+            ['fecha', '=', $fecha],
+        ])->count();
+        $ayer = new Carbon('Yesterday');
+        $registroAyer = mdlChecadas::where([
+            ['id_tblPersonal', '=', $personal],
+            ['fecha', '=', $ayer],
+        ])->get();
+        
+
+        if($registros==0)
+        {
+            if($registroAyer->count()>0)
+            {
+                $masdeve = new Carbon($registroAyer[0]->hora);
+                if($registroAyer[0]->hora_salida==null)
+                {
+                    if($masdeve->hour>=20)
+                    {
+                        $entrada = $this->entradas($personal,$ayer);
+                        if($entrada[0]->entradaHoras != null && $entrada[0]->salidaHoras == null)
+                        {
+                            return 'Permiso por horas no atendido: registre su regreso';
+                        }elseif($entrada[0]->entradaHoras != null && $entrada[0]->salidaHoras != null)
+                        {
+                            return $this->registrarSalida($entrada,$hora,$nombre,$var=1);
+                        }elseif($entrada[0]->entradaHoras == null && $entrada[0]->salidaHoras == null)
+                        {
+                            return $this->registrarSalida($entrada,$hora,$nombre,$var=0);
+                        }else
+                        {
+                            return 'error raro tipo 1';
+                        } 
+                    }else
+                    {
+                        return $this->primeraEntrada($nombre,$personal,$hora,$fecha);
+                    }
+                }else
+                {
+                    return $this->primeraEntrada($nombre,$personal,$hora,$fecha);
+                } 
+            }else
+            {
+                return $this->primeraEntrada($nombre,$personal,$hora,$fecha);
+            }
+            return $this->primeraEntrada($nombre,$personal,$hora,$fecha);         
+        }else 
+        {
+            $entrada = $this->entradas($personal,$fecha);
+            if($entrada[0]->entradaHoras != null && $entrada[0]->salidaHoras == null)
+            {
+                return 'Permiso por horas no atendido: registre su regreso';
+            }elseif($entrada[0]->entradaHoras != null && $entrada[0]->salidaHoras != null)
+            {
+                return $this->registrarSalida($entrada,$hora,$nombre,$var=1);
+            }elseif($entrada[0]->entradaHoras == null && $entrada[0]->salidaHoras == null)
+            {
+                return $this->registrarSalida($entrada,$hora,$nombre,$var=0);
+            }else
+            {
+                return 'error raro';
+            } 
+        }
+    }
+
+    public function primeraEntrada($nombre,$personal,$hora,$fecha){
+        $mdlChecadas = new mdlChecadas();
+        $mdlChecadas->id_tblPersonal = $personal;
+        $mdlChecadas->hora = $hora;
+        $mdlChecadas->comentario = '';
+        $mdlChecadas->fecha = $fecha;
+        $mdlChecadas->save();
+                
+        //return 'Inicio de jornada.'.$fecha.' '.$hora; 
+        return 'Entrada';
+    }
 
     public function permiso(Request $request)
     {
         $personal = mdlPersonal::where('expediente', '=', $request['id'])->get(); 
-        if($personal->count()==0){
+        if($personal->count()==0)
+        {
             return "NO EXISTE ESE USUARIO";     
         }
 
@@ -97,7 +224,7 @@ class checadasController extends Controller
             {
                 $entrada[0]->entradaHoras = $hora;
                 $entrada[0]->save();
-                return ' Comienzo de entrada por horas'; 
+                return ' Comienzo de permiso por horas'; 
             }else{
                 if($entrada[0]->salidaHoras==null)
                 {
@@ -109,7 +236,7 @@ class checadasController extends Controller
                     $diff=$h1->diffInMinutes($h2);  
                     $horasWork=$h1->diffInHours($h2);  
 
-                    return $nombre.' tiempo a compensar '.$diff.' Minutos - (Total en horas : '.$horasWork.')';
+                    return 'tiempo a compensar '.$diff.' Minutos - (Total en horas : '.$horasWork.')';
                 }
                 else{
                     $h1 = new \Carbon\Carbon($entrada[0]->entradaHoras);
@@ -149,10 +276,6 @@ class checadasController extends Controller
         
         $mdlChecadas->id_tblPersonal = $request->input('id_tblPersonal');
         $mdlChecadas->hora = $request->input('hora');  
-        $mdlChecadas->hora_salida = $request->input('hora');  
-        $mdlChecadas->checada = $request->input('checada') ;
-        $mdlChecadas->checada_salida = '1';
-        $mdlChecadas->comentario = 'PC';
         $mdlChecadas->fecha = $request->input('fecha'); 
         $mdlChecadas->save();
         Session::flash('message','Checada creada correctamente');
@@ -161,48 +284,9 @@ class checadasController extends Controller
 
     }
 
-    public function registroUnHorario($nombre,$personal,$hora,$fecha){
+    
 
-        $registros = mdlChecadas::where([
-            ['id_tblPersonal', '=', $personal],
-            ['fecha', '=', $fecha],
-        ])->count();
-
-
-        if($registros==0){
-            $mdlChecadas = new mdlChecadas();
-            $mdlChecadas->id_tblPersonal = $personal;
-            $mdlChecadas->hora = $hora;
-            $mdlChecadas->comentario = '';
-            $mdlChecadas->fecha = $fecha;   
-            $mdlChecadas->checada = '1';
-            $mdlChecadas->save();
-            
-            return $nombre.' entrada registrada';      
-        } else {
-            $entrada = $this->entradas($personal,$fecha);
-            if($entrada[0]->entradaHoras != null && $entrada[0]->salidaHoras == null)
-            {
-                return 'Permiso por horas no atendido: registre su regreso';
-            }elseif($entrada[0]->entradaHoras != null && $entrada[0]->salidaHoras != null)
-            {
-                $estado='Salida ';
-                $check='1';
-
-                return $this->registrarSalida($entrada,$hora,$estado,$check,$nombre,$var=1);
-            }elseif($entrada[0]->entradaHoras == null && $entrada[0]->salidaHoras == null)
-            {
-                $estado='Salida ';
-                $check='1';
-
-                return $this->registrarSalida($entrada,$hora,$estado,$check,$nombre,$var=0);
-            }else{
-                return 'error raro';
-            } 
-        }
-    }
-
-    public function registrarSalida($entrada,$hora,$estado,$check,$nombre,$var){
+    public function registrarSalida($entrada,$hora,$nombre,$var){
         
         $entrada_count = $entrada->count();
         $h1 = new \Carbon\Carbon($entrada[0]->entradaHoras);
@@ -212,20 +296,18 @@ class checadasController extends Controller
 
         if($entrada_count>0)
         {
-            if($entrada[0]->checada_salida==null)
-            {
-                $entrada[0]->checada_salida = $check;
-                $entrada[0]->hora_salida = $hora;
-                $entrada[0]->save();
+            
+            $entrada[0]->hora_salida = $hora;
+            $entrada[0]->save();
 
-                if($var==1){
-                    return $nombre.' Salida registrada. (Tiempo pendiente hoy: )'.$diff.': minutos (Total en horas: '.$horasWork.')'; 
-                }else{
-                    return $nombre.' Salida registrada'; 
-                }
+            if($var==1){
+                //return 'Término de jornada. Su entrada fue a las '.$entrada[0]->hora.' el día '.$entrada[0]->fecha.' (Tiempo pendiente hoy: '.$diff.': minutos) (Total en horas: '.$horasWork.')'; 
+                return 'Salida';
             }else{
-                return 'Ya hay una salida registrada. (Tiempo pendiente hoy: '.$diff.': minutos) (Total en horas: '.$horasWork.')';
-            } 
+                //return 'Término de jornada. Su entrada fue a las '.$entrada[0]->hora.' el día '.$entrada[0]->fecha; 
+                return 'Salida';
+            }
+            
         }else{
             return 'No hay registros de entrada';
         }
@@ -323,23 +405,32 @@ class checadasController extends Controller
         ->whereBetween('fecha', [$fechaInicio, $fechaFinal])
         ->paginate(7);
 
+        /*$ext = mdlHoras::where([
+            ['id_tblPersonal', '=', $personal],
+            ['hora_entrada', '!=', null],
+            ['fecha', '=', $fecha],
+        ])->get();*/
+
         foreach($checada as $checadas){
             $h1 = new \Carbon\Carbon($checadas->entradaHoras);
             $h2 = new \Carbon\Carbon($checadas->salidaHoras);
             $diff=$h1->diffInMinutes($h2);  
             $minPendientes = $minPendientes+$diff;
-            
-            $h3 = new \Carbon\Carbon($checadas->hora);
-            $h4 = new \Carbon\Carbon($checadas->hora_salida);
-            $ext=$h3->diffInMinutes($h4);  
-            
-            if($ext>480){
-                $minExtras = $minExtras+($ext-480);
-            }
+            $horasExtras=$h1->diffInHours($h2);
         }
+        /*
+        foreach($ext as $extra){
+            $h1 = new \Carbon\Carbon($extra->hora_entrada);
+            $h2 = new \Carbon\Carbon($extra->hora_salida);
+            $diff=$h1->diffInMinutes($h2);  
+            $minPendientes = $minPendientes+$diff;
+            $horasExtras=$h1->diffInHours($h2);
+        }*/
 
-        $horasExtras = ' Horas extra: '.$minExtras/60;
-        $horasPendientes = ' Salida por horas: '.$minPendientes/60;
+
+        $horasPendientes = $minPendientes-($horasExtras*60);
+        
+        $horasPendientes = ' Salida por horas: '.$horasExtras.': horas y '.$horasPendientes.': minutos';
 
         $horario = mdlHorarios::where('id_tblPersonal', '=', $id)->get(); 
 
@@ -464,4 +555,5 @@ class checadasController extends Controller
         
     }
 
+    
 }
