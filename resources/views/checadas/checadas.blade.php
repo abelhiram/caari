@@ -91,6 +91,7 @@ if(!isset($_GET['id'])){
 						<th>Permiso Fin</th>
 						<th>Comentario</th>
 						<th>Fecha</th>
+						<th>Falta</th>
 					</thead>
 					@foreach($checada as $checadas)
 					<tbody>
@@ -100,6 +101,11 @@ if(!isset($_GET['id'])){
 						<td>{{$checadas->salidaHoras}}</td>
 						<td>{{$checadas->comentario}}</td>
 						<td>{{$checadas->fecha}}</td>
+						@if($checadas->hora_salida==null)
+						<td><label class="glyphicon glyphicon-ok"></label></td>
+						@else
+						<td></td>
+						@endif
 						<td>
 							{!!link_to_route('checadas.edit', $title = 'Modificar', $parameters = $checadas->id, $attributes = ['class'=>'btn btn-default']);!!}
 						</td>
@@ -131,9 +137,5 @@ if(!isset($_GET['id'])){
           <!-- nav-tabs-custom -->
         </div>
         <!-- /.col -->
-	</div>
 
-               
-        
-	
 	@endsection

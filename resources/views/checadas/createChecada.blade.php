@@ -66,7 +66,7 @@
 			var hora = document.getElementById("hora");
 			if (checkBox.checked == true){
 				text.style.display = "";
-				com.value= "INASISTENCIA";
+				com.value= "";
 				hora.value =""
 			} else {
 				text.style.display = "none";
