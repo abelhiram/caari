@@ -1,12 +1,13 @@
+
 <?php use App\Http\Controllers\checadasController;
 if(!isset($_GET['fechaInicio'])){
 	$fechainicio = date("Y-m-d");
 	$horasPendientes=null;
-	$horasExtras=null;
+	$horasExtra=null;
 } else{
 	$fechainicio = $_GET['fechaInicio'];
 	$horasPendientes;
-	$horasExtras;
+	$horasExtra;
 }
 
 if(!isset($_GET['fechaFinal'])){
@@ -20,16 +21,18 @@ if(!isset($_GET['id'])){
 	$id = $_GET['id'];
 }
 ?>
+
 @extends('layouts.admin')
 {!!Html::style('http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')!!}
 @section('pagina')
+
 @foreach($personal as $personal)
 	No. de Empleado:
 	{{$personal->expediente}}
 	Nombre:
 	{{$personal->nombre}}
-	
 @endforeach
+
 @stop
 @section('contenido')	
 	@if(Session::has('message'))
@@ -61,33 +64,76 @@ if(!isset($_GET['id'])){
 	</div>
 	<h4>{{$fechainicio}}</h4><h4>{{$fechaFinal}}</h4>
 	<h4 style="">{{$horasPendientes}}</h4>
+	<h4 style="">{{$horasExtra}}</h4>
 	<div style="display:none;">
 			{!!Form::text('id', $personal->id ,['class' => 'form-control'])!!}
 			{!!Form::close()!!}
 			</div>
-		<table class="table">
-		<thead>
-			<th>Hora de entrada</th>
-			<th>Hora de salida</th>
-			<th>Permiso Inicio</th>
-			<th>Permiso Fin</th>
-			<th>comentario</th>
-			<th>fecha</th>
-		</thead>
-		@foreach($checada as $checadas)
-		<tbody>
-			<td>{{$checadas->hora}}</td>
-			<td>{{$checadas->hora_salida}}</td>
-			<td>{{$checadas->entradaHoras}}</td>
-			<td>{{$checadas->salidaHoras}}</td>
-			<td>{{$checadas->comentario}}</td>
-			<td>{{$checadas->fecha}}</td>
-			<td>
-				{!!link_to_route('checadas.edit', $title = 'Modificar', $parameters = $checadas->id, $attributes = ['class'=>'btn btn-success']);!!}
-			</td>
-		</tbody>
-		@endforeach	
-		</table>
-		{!!$checada->render()!!}
+
+		
+    
+							
+	<div class="col-md-12"><br>
+          <!-- Custom Tabs -->
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab_1" data-toggle="tab">Entradas/salidas</a></li>
+              <li><a href="#tab_2" data-toggle="tab">Horas extra</a></li>
+
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="tab_1">
+			  <table class="table">
+					<thead>
+						<th>Hora de entrada</th>
+						<th>Hora de salida</th>
+						<th>Permiso Inicio</th>
+						<th>Permiso Fin</th>
+						<th>Comentario</th>
+						<th>Fecha</th>
+					</thead>
+					@foreach($checada as $checadas)
+					<tbody>
+						<td>{{$checadas->hora}}</td>
+						<td>{{$checadas->hora_salida}}</td>
+						<td>{{$checadas->entradaHoras}}</td>
+						<td>{{$checadas->salidaHoras}}</td>
+						<td>{{$checadas->comentario}}</td>
+						<td>{{$checadas->fecha}}</td>
+						<td>
+							{!!link_to_route('checadas.edit', $title = 'Modificar', $parameters = $checadas->id, $attributes = ['class'=>'btn btn-default']);!!}
+						</td>
+					</tbody>
+					@endforeach	
+				</table>
+              </div>
+              <!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_2">
+			  <table class="table">
+					<thead>
+						<th>Inicio</th>
+						<th>Término</th>
+						<th>Fecha</th>
+					</thead>
+					@foreach($extras as $extras)
+					<tbody>
+						<td>{{$extras->hora_entrada}}</td>
+						<td>{{$extras->hora_salida}}</td>
+						<td>{{$extras->fecha}}</td>
+					</tbody>
+					@endforeach
+				</table>
+              </div>
+			  
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+	</div>
+
+               
+        
 	
 	@endsection

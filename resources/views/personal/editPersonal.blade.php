@@ -19,7 +19,7 @@
                             </div>
                         </div>
 						{!!Form::open(['route'=>['personal.destroy',$mdlPersonal->id],'method'=>'DELETE'])!!}
-						{!!Form::submit('Eliminar',['class'=>'btn btn-danger pull-right','style'=>'margin-top:-49px;margin-right:130px;'])!!}
+						<!--{!!Form::submit('Eliminar',['class'=>'btn btn-danger pull-right','style'=>'margin-top:-49px;margin-right:130px;'])!!}-->
 						{!!Form::close()!!}
 					</div>
 				</div>

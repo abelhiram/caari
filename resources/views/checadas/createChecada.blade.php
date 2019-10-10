@@ -21,21 +21,16 @@
                             </div>
 						</div>
 						<div class="form-group row">
-
+						Inasistencia: <input type="checkbox" id="myCheck"  onclick="myFunction()">
                             <div class="col-md-6">
 							{!!Form::text('id_tblPersonal',$personal->id,['style'=>'display:none;','placeholder'=>'expediente o id'])!!}
                             </div>
                         </div>
+						
 						<div class="form-group row">
                             <label for="hora" class="col-md-4 col-form-label text-md-right">Hora</label>
                             <div class="col-md-6">
-							{!! Form::time('hora',\Carbon\Carbon::now()->toTimeString(), ['class' => 'form-control']) !!} 
-                            </div>
-						</div>
-						<div class="form-group row">
-                            <!--label for="comentario" class="col-md-4 col-form-label text-md-right">Comentario</label-->
-                            <div class="col-md-6">
-								{!!Form::textarea('comentario', 'checada manual',['style'=>'display:none;','size' => '10x5','class'=>'form-control','placeholder'=>'Comentario','disabled'=>'disabled'])!!}
+							{!! Form::time('hora',\Carbon\Carbon::now()->toTimeString(), ['id' => 'hora','class' => 'form-control']) !!} 
                             </div>
 						</div>
 						<div class="form-group row">
@@ -44,7 +39,14 @@
 								{!!Form::date('fecha', \Carbon\Carbon::now(),['class'=>'form-control'])!!}
                             </div>
 						</div>
+						<div class="form-group row" id="area" style="display:none;">
+                            <label for="comentario" class="col-md-4 col-form-label text-md-right">Comentario</label>
+                            <div class="col-md-6">
+								{!!Form::textarea('comentario', null,['id'=>'com','style'=>'','size' => '10x2','class'=>'form-control','placeholder'=>'Comentario'])!!}
+                            </div>
+						</div>
 						<div class="form-group row mb-0">
+
                             <div class="col-md-6 offset-md-4">
 								{!!Form::submit('Registrar checada',['class'=>'btn btn-primary'])!!}
 								{!!link_to_route('checadas.show', $title = 'Cancelar', $parameters = $personal->id, $attributes = ['class'=>'btn btn-warning']);!!}
@@ -56,6 +58,21 @@
 			</div>
 		</div>
 	</div>
-
+	<script>
+		function myFunction() {
+			var checkBox = document.getElementById("myCheck");
+			var text = document.getElementById("area");
+			var com = document.getElementById("com");
+			var hora = document.getElementById("hora");
+			if (checkBox.checked == true){
+				text.style.display = "";
+				com.value= "INASISTENCIA";
+				hora.value =""
+			} else {
+				text.style.display = "none";
+				com.value = "";
+			}
+		}
+	</script>
 @endsection
 	

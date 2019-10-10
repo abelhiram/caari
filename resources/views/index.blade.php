@@ -50,7 +50,7 @@ Personal
 				</li>
 				<li role="separator" class="divider" ></li>
 				<li>
-					{!!link_to_route('personal.edit', $title = 'Editar', $parameters = $personals->id, $attributes = ['class'=>'glyphicon glyphicon-pencil']);!!}
+					{!!link_to_route('personal.edit', $title = 'Modificar', $parameters = $personals->id, $attributes = ['class'=>'glyphicon glyphicon-pencil']);!!}
 				</li>
 				<li style="display: none;">
 					{!!link_to_route('horarios.show', $title = 'Horario', $parameters = $personals->id, $attributes = ['class'=>'glyphicon glyphicon-calendar']);!!}

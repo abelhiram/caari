@@ -97,7 +97,7 @@ class checadasController extends Controller
         	$ext[0]->hora_salida = $hora;
             $ext[0]->save();
             //return 'Término de horas extra: '.$fecha.' '.$hora; 
-        	return 'Termino de horas extra'; 
+        	return 'Término de horas extra'; 
         }
     }
 
@@ -277,6 +277,7 @@ class checadasController extends Controller
         $mdlChecadas->id_tblPersonal = $request->input('id_tblPersonal');
         $mdlChecadas->hora = $request->input('hora');  
         $mdlChecadas->fecha = $request->input('fecha'); 
+        $mdlChecadas->comentario = $request->input('comentario'); 
         $mdlChecadas->save();
         Session::flash('message','Checada creada correctamente');
         //return 
@@ -328,8 +329,9 @@ class checadasController extends Controller
             return Redirect::to('/personal');
         }
         $horario = mdlHorarios::where('id_tblPersonal', '=', $id)->get(); 
-        $checada = mdlChecadas::where('id_tblPersonal', '=', $id)->paginate(7); 
-        return view('checadas/checadas',compact('horario','personal','checada'));
+        $checada = mdlChecadas::where('id_tblPersonal', '=', $id)->paginate(50);
+        $extras = mdlHoras::where('id_tblPersonal', '=', $id)->paginate(50);  
+        return view('checadas/checadas',compact('horario','personal','checada','extras'));
     }
 
     
@@ -397,44 +399,49 @@ class checadasController extends Controller
         }
         $minPendientes=0;
         $horasPendientes=0;
-        $minExtras=0;
-        $horasExtras=0;
+        $hPend=0;
+        $minExtra=0;
+        $horasExtra=0;
+        $horExt=0;
 
-        $checada = \App\mdlChecadas::orderBy('id','ASC')
-        ->where('id_tblPersonal', '=', $id)
+        $checada = mdlChecadas::where('id_tblPersonal', '=', $id)
         ->whereBetween('fecha', [$fechaInicio, $fechaFinal])
-        ->paginate(7);
+        ->get();
 
-        /*$ext = mdlHoras::where([
-            ['id_tblPersonal', '=', $personal],
-            ['hora_entrada', '!=', null],
-            ['fecha', '=', $fecha],
-        ])->get();*/
+        $extras = mdlHoras::where('id_tblPersonal', '=', $id)
+        ->whereBetween('fecha', [$fechaInicio, $fechaFinal])
+        ->get();
+
+        
 
         foreach($checada as $checadas){
             $h1 = new \Carbon\Carbon($checadas->entradaHoras);
             $h2 = new \Carbon\Carbon($checadas->salidaHoras);
             $diff=$h1->diffInMinutes($h2);  
             $minPendientes = $minPendientes+$diff;
-            $horasExtras=$h1->diffInHours($h2);
+            $hPend=$h1->diffInHours($h2);
         }
-        /*
-        foreach($ext as $extra){
-            $h1 = new \Carbon\Carbon($extra->hora_entrada);
-            $h2 = new \Carbon\Carbon($extra->hora_salida);
-            $diff=$h1->diffInMinutes($h2);  
-            $minPendientes = $minPendientes+$diff;
-            $horasExtras=$h1->diffInHours($h2);
-        }*/
-
-
-        $horasPendientes = $minPendientes-($horasExtras*60);
         
-        $horasPendientes = ' Salida por horas: '.$horasExtras.': horas y '.$horasPendientes.': minutos';
+        foreach($extras as $extra){
+            $h3 = new \Carbon\Carbon($extra->hora_entrada);
+            $h4 = new \Carbon\Carbon($extra->hora_salida);
+            $diff2=$h3->diffInMinutes($h4);  
+            $minExtra = $minExtra+$diff2;
+            $horExt=$h3->diffInHours($h4);
+        }
+
+
+        $horasPendientes = $minPendientes-($hPend*60);
+        
+        $horasPendientes = ' Salida por horas: '.$hPend.': horas y '.$horasPendientes.': minutos';
+
+        $horasExtra = $minExtra-($horExt*60);
+        
+        $horasExtra = ' Horas extra: '.$horExt.': horas y '.$horasExtra.': minutos';
 
         $horario = mdlHorarios::where('id_tblPersonal', '=', $id)->get(); 
 
-        return view('checadas/checadas',compact('horario','personal','checada','horasPendientes','horasExtras'));
+        return view('checadas/checadas',compact('horario','personal','checada','extras','horasPendientes','horasExtra'));
     }
 
     

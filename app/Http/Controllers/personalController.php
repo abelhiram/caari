@@ -31,7 +31,7 @@ class personalController extends Controller
         $personal = \App\mdlPersonal::orderBy('id','ASC')
         ->nombre($nombre)
         ->expediente($expediente)
-        ->paginate(9);
+        ->paginate(50);
         return view('index',compact('personal'));
     }
     
