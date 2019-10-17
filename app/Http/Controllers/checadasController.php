@@ -290,24 +290,33 @@ class checadasController extends Controller
     public function registrarSalida($entrada,$hora,$nombre,$var){
         
         $entrada_count = $entrada->count();
-        $h1 = new \Carbon\Carbon($entrada[0]->entradaHoras);
+        /*$h1 = new \Carbon\Carbon($entrada[0]->entradaHoras);
         $h2 = new \Carbon\Carbon($entrada[0]->salidaHoras);
         $diff=$h1->diffInMinutes($h2);  
-        $horasWork=$h1->diffInHours($h2);  
+        $horasWork=$h1->diffInHours($h2);  */
+
+        $h1 = new \Carbon\Carbon($entrada[0]->hora);
+        $h2 = new \Carbon\Carbon($hora);
+        $tolerancia=$h1->diffInMinutes($h2);  
 
         if($entrada_count>0)
-        {
-            
-            $entrada[0]->hora_salida = $hora;
-            $entrada[0]->save();
+        {   
+            if($tolerancia<30)
+                {
+                    return 'Entrada ya registrada'; 
+                }else
+                {    
+                    $entrada[0]->hora_salida = $hora;
+                    $entrada[0]->save();
 
-            if($var==1){
-                //return 'Término de jornada. Su entrada fue a las '.$entrada[0]->hora.' el día '.$entrada[0]->fecha.' (Tiempo pendiente hoy: '.$diff.': minutos) (Total en horas: '.$horasWork.')'; 
-                return 'Salida';
-            }else{
-                //return 'Término de jornada. Su entrada fue a las '.$entrada[0]->hora.' el día '.$entrada[0]->fecha; 
-                return 'Salida';
-            }
+                    if($var==1){
+                        //return 'Término de jornada. Su entrada fue a las '.$entrada[0]->hora.' el día '.$entrada[0]->fecha.' (Tiempo pendiente hoy: '.$diff.': minutos) (Total en horas: '.$horasWork.')'; 
+                        return 'Salida';
+                    }else{
+                        //return 'Término de jornada. Su entrada fue a las '.$entrada[0]->hora.' el día '.$entrada[0]->fecha; 
+                        return 'Salida';
+                    }
+                }
             
         }else{
             return 'No hay registros de entrada';
