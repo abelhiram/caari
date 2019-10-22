@@ -83,21 +83,52 @@ class checadasController extends Controller
             ['hora_entrada', '!=', null],
             ['fecha', '=', $fecha],
         ])->get();
+        $ayer = new Carbon('Yesterday');
+        $registroAyer = mdlHoras::where([
+            ['id_tblPersonal', '=', $personal],
+            ['fecha', '=', $ayer],
+        ])->get();
 
         if($ext->count()==0){
-        	$mdlExt = new mdlHoras();
-	        $mdlExt->id_tblPersonal = $personal;
-	        $mdlExt->hora_entrada = $hora;
-	        $mdlExt->fecha = $fecha;
-	        $mdlExt->save();
+            if($registroAyer->count()>0)
+            {
+                $masdeve = new Carbon($registroAyer[0]->hora_entrada);
+                if($registroAyer[0]->hora_salida==null)
+                {
+                    if($masdeve->hour>=18)
+                    {
+                        $registroAyer[0]->hora_salida = $hora;
+                        $registroAyer[0]->save();
 
-            //return 'Inicio de horas extra: '.$fecha.' '.$hora; 
+                        return 'Término de horas extra'; 
+                    }
+                }
+                if($registroAyer[0]->hora_salida!=null)
+                {
+                    $h1 = new \Carbon\Carbon($registroAyer[0]->hora_salida);
+                    $h2 = new \Carbon\Carbon($hora);
+                    $tolerancia=$h1->diffInMinutes($h2); 
+
+                    if($tolerancia<30)
+                    {
+                        return "horas extras ya registradas";
+                    }
+                }
+            }
+            $mdlExt = new mdlHoras();
+            $mdlExt->id_tblPersonal = $personal;
+            $mdlExt->hora_entrada = $hora;
+            $mdlExt->fecha = $fecha;
+            $mdlExt->save();
+
             return 'Inicio de horas extra';
+                
         }else{
-        	$ext[0]->hora_salida = $hora;
+            $ext[0]->hora_salida = $hora;
             $ext[0]->save();
-            //return 'Término de horas extra: '.$fecha.' '.$hora; 
-        	return 'Término de horas extra'; 
+
+            return 'Término de horas extra'; 
+            
         }
     }
 
@@ -136,7 +167,7 @@ class checadasController extends Controller
                 $masdeve = new Carbon($registroAyer[0]->hora);
                 if($registroAyer[0]->hora_salida==null)
                 {
-                    if($masdeve->hour>=20)
+                    if($masdeve->hour>=18)
                     {
                         $entrada = $this->entradas($personal,$ayer);
                         if($entrada[0]->entradaHoras != null && $entrada[0]->salidaHoras == null)
@@ -185,15 +216,53 @@ class checadasController extends Controller
     }
 
     public function primeraEntrada($nombre,$personal,$hora,$fecha){
-        $mdlChecadas = new mdlChecadas();
-        $mdlChecadas->id_tblPersonal = $personal;
-        $mdlChecadas->hora = $hora;
-        $mdlChecadas->comentario = '';
-        $mdlChecadas->fecha = $fecha;
-        $mdlChecadas->save();
-                
-        //return 'Inicio de jornada.'.$fecha.' '.$hora; 
-        return 'Entrada';
+        $ayer = new Carbon('Yesterday');
+        $entrada = $this->entradas($personal,$ayer->format('Y-m-d'));
+
+
+        if($entrada->count()>0)
+        {
+            if($entrada[0]->hora_salida!=null)
+            {
+                $h1 = new \Carbon\Carbon($entrada[0]->hora_salida);
+                $h2 = new \Carbon\Carbon($hora);
+                $tolerancia=$h1->diffInMinutes($h2);  
+                if($tolerancia<30)
+                {
+                    return "salida ya registrada";
+                }else
+                {
+                    $mdlChecadas = new mdlChecadas();
+                    $mdlChecadas->id_tblPersonal = $personal;
+                    $mdlChecadas->hora = $hora;
+                    $mdlChecadas->comentario = '';
+                    $mdlChecadas->fecha = $fecha;
+                    $mdlChecadas->save();
+                            
+                    return 'Entrada';
+                }
+            }else{
+                $mdlChecadas = new mdlChecadas();
+                $mdlChecadas->id_tblPersonal = $personal;
+                $mdlChecadas->hora = $hora;
+                $mdlChecadas->comentario = '';
+                $mdlChecadas->fecha = $fecha;
+                $mdlChecadas->save();
+                        
+                return 'Entrada';
+            }
+        }else
+        {
+            $mdlChecadas = new mdlChecadas();
+            $mdlChecadas->id_tblPersonal = $personal;
+            $mdlChecadas->hora = $hora;
+            $mdlChecadas->comentario = '';
+            $mdlChecadas->fecha = $fecha;
+            $mdlChecadas->save();
+                    
+            return 'Entrada';
+        }
+        
     }
 
     public function permiso(Request $request)
